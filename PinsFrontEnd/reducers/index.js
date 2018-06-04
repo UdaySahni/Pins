@@ -1,10 +1,10 @@
 import { combineReducers } from 'redux';
-import BooksReducer from './reducer_books';
-import ActiveBook from './reducer_active_book';
+import CurrentLocation from './reducer_current_location';
+import SavedLocations from './reducer_saved_locations';
 
 const rootReducer = combineReducers({
-  books: BooksReducer,
-  activeBook: ActiveBook
+  currentLocation: CurrentLocation,
+  savedLocations: SavedLocations
 });
 
 export default rootReducer;
