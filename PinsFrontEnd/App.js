@@ -5,11 +5,23 @@ import { createStore, applyMiddleware } from 'redux';
 import { AppLoading, Asset, Font } from 'expo';
 import { Ionicons } from '@expo/vector-icons';
 import ReduxPromise from 'redux-promise';
+import { persistStore, persistReducer, PersistGate } from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
+import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2'
 
 import RootNavigation from './navigation/RootNavigation';
 import reducers from './reducers';
 
+const persistConfig = {
+ key: 'root',
+ storage: storage,
+ stateReconciler: autoMergeLevel2
+};
+
 const createStoreWithMiddleware = applyMiddleware(ReduxPromise)(createStore);
+const pReducer = persistReducer(persistConfig, reducers);
+const store = createStoreWithMiddleware(pReducer);
+const persistor = persistStore(store);
 
 export default class App extends React.Component {
   state = {
@@ -27,7 +39,7 @@ export default class App extends React.Component {
       );
     } else {
       return (
-        <Provider store={createStoreWithMiddleware(reducers)}>
+        <Provider store={store}>
           <View style={styles.container}>
             {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
             <RootNavigation />
@@ -68,5 +80,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-  },
+    ...Platform.select({
+        android: {
+            marginTop: StatusBar.currentHeight
+        }
+    })
+  }
 });
